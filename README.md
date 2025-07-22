@@ -34,6 +34,8 @@ A Flask-based dashboard for running and visualizing Nmap scans.
 - Visualize open/filtered/closed ports and services
 - Export results as PDF
 - Light/Dark theme toggle
+- Configurable scan history and visualization:
+  Easily adjust how many scan records are retained in [scan_history.json](scan_history.json) (default: 50), as well as the number of recent scans displayed in the trends line graph (default: 15).
 
 ## Notes
 
