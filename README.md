@@ -13,6 +13,9 @@ A Flask-based dashboard for running and visualizing Nmap scans.
 ## Setup
 
 1. **Clone or download this repository.**
+   ```
+   https://github.com/sundarAlok/Nmap-Dashboard-v1.git
+   ```
 2. **Install dependencies:**
    ```
    pip install -r requirements.txt
