@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nmap Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/styles.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        accent: '#1b6cee',
+                        success: '#4caf50',
+                        warning: '#ff9800',
+                        danger: '#f44336',
+                        primary: {
+                            light: '#f8fafc',
+                            dark: '#1e1e1e'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-[#f8fafc] text-[#1e293b]">
+    <div class="max-w-7xl mx-auto pt-6 pb-8">
+        
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white py-3 px-4 border-b border-gray-200 rounded-2xl">
+            <div class="flex items-center gap-0">
+                <img src="/static/logo.png" alt="Nmap Dashboard Logo" class="h-5 w-5 ml-2">
+                <h1 class="text-2xl font-bold ml-[2px]">map Dashboard</h1>
+            </div>
+            <div class="flex-grow scan-input-container">
+                <div class="flex items-stretch">
+                    <div class="px-4 py-2 bg-gray-50 border border-gray-300 rounded-l-3xl flex items-center text-gray-700 font-medium">
+                        Target
+                    </div>
+                    <input 
+                        type="text" 
+                        id="targetInput" 
+                        placeholder="Enter IP address (e.g., 192.168.1.1) or IP range (e.g., 192.168.1.1-100)" 
+                        class="flex-grow px-4 py-2 bg-white border-t border-b border-gray-300 focus:outline-none"
+                        value="scanme.nmap.org"
+                    >
+                    <button 
+                        id="scanButton"
+                        class="px-4 py-2 bg-accent hover:bg-blue-600 text-white border border-accent rounded-r-3xl font-medium flex items-center justify-center gap-2">
+                        Scan
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-4 w-full md:w-auto">
+                <div class="relative">
+                    <div class="dropdown-item rounded-3xl p-0 m-0">
+                        <button id="filterBtn" class="px-4 py-2 bg-[#F3FCFE] hover:text-[#1B0AAF] text-[#11A5E9] border border-gray-300 rounded-3xl flex items-center gap-2">
+                            <i class="fas fa-bars fa-sm"></i> Filter
+                        </button>
+                        <span class="custom-tooltip">Under progress...</span>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="dropdown-item rounded-3xl p-0 m-0">
+                        <button id="exportBtn" class="dropdown-item px-4 py-2 bg-white hover:bg-gray-50 border border-gray-300 rounded-3xl flex items-center gap-2">
+                            Export
+                        </button>
+                        <span class="custom-tooltip absolute left-0 whitespace-normal w-[220px] px-3 py-2 text-center -translate-x-full -translate-y-1/2 top-1/2 bg-black text-white text-sm rounded-lg opacity-0 invisible transition-opacity duration-200 z-20">
+                            If having problem in exporting the graphs in report pdf then please use ctrl+p
+                        </span>
+                    </div>
+                </div>
+                <div class="other-container relative">
+                    <button class="px-4 py-2 bg-white hover:bg-gray-50 border border-gray-300 rounded-3xl flex items-center gap-2">
+                     Other
+                    </button>
+                    <div class="other-dropdown rounded-2xl">
+                    <div class="dropdown-item rounded-2xl" id="themeToggle">
+                        <span class="custom-tooltip">Under Progress...</span>
+                        <i class="fas fa-moon mr-2"></i> Toggle Theme
+                    </div>
+                    <div class="dropdown-item rounded-2xl" id="historyDropdown">
+                        <span class="custom-tooltip">View detailed report by clicking on the respected row of the table</span>
+                        <i class="fas fa-history mr-2"></i> Scan History
+                    </div>
+                    <div class="dropdown-item rounded-2xl" id="settingsDropdown">
+                        <span class="custom-tooltip">Settings related to scan type & timeout</span>
+                        <i class="fas fa-cog mr-2"></i> Settings
+                    </div>
+                    <div class="dropdown-item rounded-2xl" id="aboutDropdown">
+                        <span class="custom-tooltip">About the application</span>
+                        <i class="fas fa-info-circle mr-2"></i> About
+                    </div>
+                </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- warning message (hidden during scan) -->
+        <div id="warningBanner" class="mt-3 px-5 py-2 bg-yellow-100 text-yellow-800 rounded-lg flex items-center">
+            <i class="fas fa-exclamation-triangle mr-2"></i>
+            <span>Only scan networks you have permission to scan</span>
+        </div>
+        
+        <!-- loading indicator -->
+        <div id="loadingIndicator" class="hidden mt-6 text-center p-8 bg-white rounded-lg">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent mb-3"></div>
+            <p class="text-gray-500 text-lg">Scanning target...</p>
+            <p class="text-gray-400 mt-2 blink">This may take several minutes depending on the target size</p>
+        </div>
+        <div id="errorMessage" class="hidden mt-6 p-4 bg-red-100 text-red-800 rounded-lg"></div>
+
+        <!-- results section -->
+        <div id="resultsSection" class="hidden">
+            <div class="mt-8 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+                <div class="stat-card rounded-lg p-4 text-center shadow">
+                    <div class="text-2xl font-bold" id="hostsUp">0</div>
+                    <div class="text-gray-500 text-sm mt-1">Hosts Up</div>
+                </div>
+                <div class="stat-card rounded-lg p-4 text-center shadow">
+                    <div class="text-2xl font-bold" id="openPorts">0</div>
+                    <div class="text-gray-500 text-sm mt-1">Open Ports</div>
+                </div>
+                <div class="stat-card rounded-lg p-4 text-center shadow">
+                    <div class="text-2xl font-bold" id="filteredPorts">0</div>
+                    <div class="text-gray-500 text-sm mt-1">Filtered Ports</div>
+                </div>
+                <div class="stat-card rounded-lg p-4 text-center shadow">
+                    <div class="text-2xl font-bold" id="closedPorts">0</div>
+                    <div class="text-gray-500 text-sm mt-1">Closed Ports</div>
+                </div>
+                <div class="stat-card rounded-lg p-4 text-center shadow">
+                    <div class="text-2xl font-bold" id="osCount">0</div>
+                    <div class="text-gray-500 text-sm mt-1">Operating Sys</div>
+                </div>
+                <div class="stat-card rounded-lg p-4 text-center shadow">
+                    <div class="text-2xl font-bold" id="servicesCount">0</div>
+                    <div class="text-gray-500 text-sm mt-1">Services</div>
+                </div>
+                <div class="stat-card rounded-lg p-4 text-center shadow">
+                    <div class="text-2xl font-bold" id="httpCount">0</div>
+                    <div class="text-gray-500 text-sm mt-1">Home/HTTP</div>
+                </div>
+                <div class="stat-card rounded-lg p-4 text-center shadow">
+                    <div class="text-2xl font-bold" id="resultsCount">0</div>
+                    <div class="text-gray-500 text-sm mt-1">Search Results</div>
+                </div>
+            </div>
+            
+            <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Host Results Table -->
+                <div class="panel rounded-lg p-6 shadow-lg">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold">Host Results</h2>
+                        <div class="text-sm text-gray-500">Last scanned: <span id="lastScanned">Just now</span></div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="py-3 px-4 text-left">Host</th>
+                                    <th class="py-3 px-4 text-left">OS</th>
+                                    <th class="py-3 px-4 text-left">Status</th>
+                                    <th class="py-3 px-4 text-left">Open Ports</th>
+                                    <th class="py-3 px-4 text-left">Service Info</th>
+                                </tr>
+                            </thead>
+                            <tbody id="hostResults">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Services Detected and Pie Chart -->
+                <div class="panel rounded-lg p-6 shadow-lg flex flex-col h-full">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-semibold mb-4">Services Detected</h2>
+                        <div class="flex flex-wrap gap-2" id="servicesDetected">
+                        </div>
+                    </div>
+                    <div class="border-t border-gray-200 my-4"></div>
+                    <!-- Pie Chart -->
+                    <div class="flex-grow">
+                        <h2 class="text-xl font-semibold mb-4">Port Status Distribution</h2>
+                        <div class="h-64">
+                            <canvas id="portPieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Line chart for scan trends -->
+                <div id="lineChartContainer" class="panel rounded-lg p-6 shadow-lg lg:col-span-2 line-chart-container">
+                    <h2 class="text-xl font-semibold mb-4">Scan Trends</h2>
+                    <div class="fixed-chart-container">
+                        <canvas id="scanTrendsChart" class="fixed-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel rounded-lg p-6 shadow-lg mt-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">Scan History</h2>
+                    <button id="clearHistoryBtn" class="text-sm text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-trash mr-1"></i> Clear History
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="py-3 px-4 text-left">Timestamp</th>
+                                <th class="py-3 px-4 text-left">Target</th>
+                                <th class="py-3 px-4 text-left">Hosts</th>
+                                <th class="py-3 px-4 text-left">Open Ports</th>
+                                <th class="py-3 px-4 text-left">Filtered Ports</th>
+                                <th class="py-3 px-4 text-left">OS Types</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scanHistory">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div id="emptyState" class="mt-6 text-center py-12">
+            <i class="fas fa-bullseye text-5xl text-gray-400 mb-4"></i>
+            <h3 class="text-2xl font-semibold text-gray-700">No Scan Results</h3>
+            <p class="text-gray-500 mt-1 max-w-md mx-auto">
+                Enter an IP address or IP range above to start scanning. Results will appear here once the scan is complete.
+            </p>
+            <div class="mt-10 p-6 pt-4 bg-white rounded-lg max-w-xl mx-auto text-left">
+                <h4 class="text-lg font-semibold mb-3">Sample Commands:</h4>
+                <ul class="list-disc pl-6 space-y-2">
+                    <li><span class="font-mono text-accent">192.168.1.1</span> - Single IP</li>
+                    <li><span class="font-mono text-accent">192.168.1.1-20</span> - IP range</li>
+                    <li><span class="font-mono text-accent">192.168.1.0/24</span> - Subnet scan</li>
+                    <li><span class="font-mono text-accent">scanme.nmap.org</span> - Public test server</li>
+                    <li><span class="font-mono text-accent">scanme.nmap.org:80</span> - Specific port</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="filterModal" class="modal">
+        <div class="modal-content w-full max-w-md">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold">Filter Results</h3>
+                    <button id="closeFilterModal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Host IP</label>
+                        <input type="text" id="hostFilter" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Operating System</label>
+                        <select id="osFilter" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                            <option value="">All</option>
+                            <option value="Linux">Linux</option>
+                            <option value="Windows">Windows</option>
+                            <option value="Unknown">Unknown</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Port Status</label>
+                        <div class="space-y-2">
+                            <div class="filter-item">
+                                <input type="checkbox" id="openPortsFilter" class="mr-2" checked>
+                                <label for="openPortsFilter">Open Ports</label>
+                            </div>
+                            <div class="filter-item">
+                                <input type="checkbox" id="filteredPortsFilter" class="mr-2" checked>
+                                <label for="filteredPortsFilter">Filtered Ports</label>
+                            </div>
+                            <div class="filter-item">
+                                <input type="checkbox" id="closedPortsFilter" class="mr-2" checked>
+                                <label for="closedPortsFilter">Closed Ports</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Service Type</label>
+                        <select id="serviceFilter" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                            <option value="">All</option>
+                            <option value="http">HTTP</option>
+                            <option value="https">HTTPS</option>
+                            <option value="ssh">SSH</option>
+                            <option value="ftp">FTP</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-end space-x-3 mt-6">
+                        <button id="applyFilters" class="px-4 py-2 bg-accent text-white rounded-md">
+                            Apply Filters
+                        </button>
+                        <button id="resetFilters" class="px-4 py-2 bg-gray-200 rounded-md">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="historyModal" class="modal">
+        <div class="modal-content w-full max-w-4xl">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold">Scan History</h3>
+                    <button id="closeHistoryModal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="overflow-x-auto max-h-[60vh]">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="py-3 px-4 text-left">Timestamp</th>
+                                <th class="py-3 px-4 text-left">Target</th>
+                                <th class="py-3 px-4 text-left">Hosts</th>
+                                <th class="py-3 px-4 text-left">Open Ports</th>
+                                <th class="py-3 px-4 text-left">Filtered Ports</th>
+                                <th class="py-3 px-4 text-left">OS Types</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modalScanHistory">
+                            <!-- to show history -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="settingsModal" class="modal">
+        <div class="modal-content w-full max-w-md">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold">Settings</h3>
+                    <button id="closeSettingsModal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Scan Timeout (seconds)</label>
+                        <input type="number" id="timeoutSetting" min="60" max="600" value="300" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Max History Entries</label>
+                        <input type="number" id="maxHistorySetting" min="5" max="50" value="15" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Default Scan Options</label>
+                        <input type="text" id="scanOptionsSetting" value="-sV -O -T4" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                    </div>
+                    
+                    <div class="flex justify-end mt-6">
+                        <button id="saveSettings" class="px-4 py-2 bg-accent text-white rounded-md">
+                            Save Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="aboutModal" class="modal">
+        <div class="modal-content w-full max-w-md">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold">About Nmap Dashboard</h3>
+                    <button id="closeAboutModal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    <p>
+                        <strong>Version:</strong> 1.0.0<br>
+                        <strong>Developed by:</strong> sundarAlok<br>
+                        <strong>License:</strong> MIT
+                    </p>
+                    
+                    <p>
+                        This dashboard provides a user-friendly interface for running Nmap scans and visualizing results.
+                        It's designed for security professionals and network administrators to quickly assess network security.
+                    </p>
+                    
+                    <p>
+                        <strong>Features:</strong>
+                        <ul class="list-disc pl-6">
+                            <li>Real-time scanning with Nmap</li>
+                            <li>Interactive visualizations</li>
+                            <li>Scan history tracking</li>
+                            <li>Export to PDF</li>
+                            <li>Customizable filters</li>
+                        </ul>
+                    </p>
+                    
+                    <p class="text-sm text-gray-500 mt-4">
+                        Note: Always obtain proper authorization before scanning networks.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/static/scripts.js"></script>
+</body>
+</html>

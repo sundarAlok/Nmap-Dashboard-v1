@@ -1,0 +1,311 @@
+[
+  {
+    "id": "ea2adec8-e46e-44ac-9311-abd4425c4255",
+    "timestamp": "2025/07/19 15:22:42",
+    "target": "1",
+    "hosts_up": 0,
+    "open_ports": 0,
+    "filtered_ports": 0,
+    "closed_ports": 0,
+    "os_count": 0,
+    "result": {
+      "hosts": [],
+      "summary": {
+        "hosts_up": 0,
+        "open_ports": 0,
+        "filtered_ports": 0,
+        "closed_ports": 0,
+        "os_count": 0,
+        "services": 0,
+        "http_ports": 0
+      },
+      "services": {},
+      "scan_info": {
+        "timestamp": "Sat Jul 19 15:22:42 2025",
+        "elapsed": "8.96"
+      }
+    }
+  },
+  {
+    "id": "dd3ee87b-b026-4106-886c-d90628875e9b",
+    "timestamp": "2025/07/19 15:23:55",
+    "target": "scanme.nmap.org",
+    "hosts_up": 1,
+    "open_ports": 4,
+    "filtered_ports": 4,
+    "closed_ports": 0,
+    "os_count": 1,
+    "result": {
+      "hosts": [
+        {
+          "ip": "45.33.32.156",
+          "os": "Linux 4.19 - 5.15",
+          "status": "up",
+          "ports": [
+            "22",
+            "25",
+            "80",
+            "135",
+            "139",
+            "445",
+            "9929",
+            "31337"
+          ],
+          "services": [
+            "22/tcp: tcpwrapped",
+            "25/tcp: smtp",
+            "80/tcp: http Apache httpd 2.4.7",
+            "135/tcp: msrpc",
+            "139/tcp: netbios-ssn",
+            "445/tcp: microsoft-ds",
+            "9929/tcp: nping-echo Nping echo",
+            "31337/tcp: tcpwrapped"
+          ]
+        }
+      ],
+      "summary": {
+        "hosts_up": 1,
+        "open_ports": 4,
+        "filtered_ports": 4,
+        "closed_ports": 0,
+        "os_count": 1,
+        "services": 7,
+        "http_ports": 1
+      },
+      "services": {
+        "tcpwrapped": 2,
+        "smtp": 1,
+        "http": 1,
+        "msrpc": 1,
+        "netbios-ssn": 1,
+        "microsoft-ds": 1,
+        "nping-echo": 1
+      },
+      "scan_info": {
+        "timestamp": "Sat Jul 19 15:23:55 2025",
+        "elapsed": "44.99"
+      }
+    }
+  },
+  {
+    "id": "2ab25627-c96f-463e-8414-5b7a5708babe",
+    "timestamp": "2025/07/19 15:54:19",
+    "target": "scanme.nmap.org",
+    "hosts_up": 1,
+    "open_ports": 4,
+    "filtered_ports": 4,
+    "closed_ports": 0,
+    "os_count": 1,
+    "result": {
+      "hosts": [
+        {
+          "ip": "45.33.32.156",
+          "os": "Linux 4.19 - 5.15",
+          "status": "up",
+          "ports": [
+            "22",
+            "25",
+            "80",
+            "135",
+            "139",
+            "445",
+            "9929",
+            "31337"
+          ],
+          "services": [
+            "22/tcp: ssh OpenSSH 6.6.1p1 Ubuntu 2ubuntu2.13",
+            "25/tcp: smtp",
+            "80/tcp: http Apache httpd 2.4.7",
+            "135/tcp: msrpc",
+            "139/tcp: netbios-ssn",
+            "445/tcp: microsoft-ds",
+            "9929/tcp: nping-echo Nping echo",
+            "31337/tcp: tcpwrapped"
+          ]
+        }
+      ],
+      "summary": {
+        "hosts_up": 1,
+        "open_ports": 4,
+        "filtered_ports": 4,
+        "closed_ports": 0,
+        "os_count": 1,
+        "services": 8,
+        "http_ports": 1
+      },
+      "services": {
+        "ssh": 1,
+        "smtp": 1,
+        "http": 1,
+        "msrpc": 1,
+        "netbios-ssn": 1,
+        "microsoft-ds": 1,
+        "nping-echo": 1,
+        "tcpwrapped": 1
+      },
+      "scan_info": {
+        "timestamp": "Sat Jul 19 15:54:19 2025",
+        "elapsed": "37.95"
+      }
+    }
+  },
+  {
+    "id": "aa5a8365-ef60-45c4-906a-dbfe82b8f734",
+    "timestamp": "2025/07/19 16:15:52",
+    "target": "testphp.vulnweb.com",
+    "hosts_up": 1,
+    "open_ports": 1,
+    "filtered_ports": 0,
+    "closed_ports": 0,
+    "os_count": 1,
+    "result": {
+      "hosts": [
+        {
+          "ip": "44.228.249.3",
+          "os": "Linux 4.15",
+          "status": "up",
+          "ports": [
+            "80"
+          ],
+          "services": [
+            "80/tcp: http nginx 1.19.0"
+          ]
+        }
+      ],
+      "summary": {
+        "hosts_up": 1,
+        "open_ports": 1,
+        "filtered_ports": 0,
+        "closed_ports": 0,
+        "os_count": 1,
+        "services": 1,
+        "http_ports": 1
+      },
+      "services": {
+        "http": 1
+      },
+      "scan_info": {
+        "timestamp": "Sat Jul 19 16:15:51 2025",
+        "elapsed": "67.75"
+      }
+    }
+  },
+  {
+    "id": "c0251d3a-cc51-403d-b389-014be57d5a90",
+    "timestamp": "2025/07/19 16:24:08",
+    "target": "scanme.nmap.org",
+    "hosts_up": 1,
+    "open_ports": 4,
+    "filtered_ports": 4,
+    "closed_ports": 0,
+    "os_count": 1,
+    "result": {
+      "hosts": [
+        {
+          "ip": "45.33.32.156",
+          "os": "Linux 4.19 - 5.15",
+          "status": "up",
+          "ports": [
+            "22",
+            "25",
+            "80",
+            "135",
+            "139",
+            "445",
+            "9929",
+            "31337"
+          ],
+          "services": [
+            "22/tcp: ssh OpenSSH 6.6.1p1 Ubuntu 2ubuntu2.13",
+            "25/tcp: smtp",
+            "80/tcp: http Apache httpd 2.4.7",
+            "135/tcp: msrpc",
+            "139/tcp: netbios-ssn",
+            "445/tcp: microsoft-ds",
+            "9929/tcp: nping-echo Nping echo",
+            "31337/tcp: tcpwrapped"
+          ]
+        }
+      ],
+      "summary": {
+        "hosts_up": 1,
+        "open_ports": 4,
+        "filtered_ports": 4,
+        "closed_ports": 0,
+        "os_count": 1,
+        "services": 8,
+        "http_ports": 1
+      },
+      "services": {
+        "ssh": 1,
+        "smtp": 1,
+        "http": 1,
+        "msrpc": 1,
+        "netbios-ssn": 1,
+        "microsoft-ds": 1,
+        "nping-echo": 1,
+        "tcpwrapped": 1
+      },
+      "scan_info": {
+        "timestamp": "Sat Jul 19 16:24:07 2025",
+        "elapsed": "34.72"
+      }
+    }
+  },
+  {
+    "id": "b12c053f-febc-421e-b039-210f2769559f",
+    "timestamp": "2025/07/22 12:38:25",
+    "target": "scanme.nmap.org",
+    "hosts_up": 1,
+    "open_ports": 4,
+    "filtered_ports": 2,
+    "closed_ports": 0,
+    "os_count": 1,
+    "result": {
+      "hosts": [
+        {
+          "ip": "45.33.32.156",
+          "os": "Linux 4.19 - 5.15",
+          "status": "up",
+          "ports": [
+            "22",
+            "80",
+            "139",
+            "445",
+            "9929",
+            "31337"
+          ],
+          "services": [
+            "22/tcp: ssh OpenSSH 6.6.1p1 Ubuntu 2ubuntu2.13",
+            "80/tcp: http Apache httpd 2.4.7",
+            "139/tcp: netbios-ssn",
+            "445/tcp: microsoft-ds",
+            "9929/tcp: nping-echo Nping echo",
+            "31337/tcp: tcpwrapped"
+          ]
+        }
+      ],
+      "summary": {
+        "hosts_up": 1,
+        "open_ports": 4,
+        "filtered_ports": 2,
+        "closed_ports": 0,
+        "os_count": 1,
+        "services": 6,
+        "http_ports": 1
+      },
+      "services": {
+        "ssh": 1,
+        "http": 1,
+        "netbios-ssn": 1,
+        "microsoft-ds": 1,
+        "nping-echo": 1,
+        "tcpwrapped": 1
+      },
+      "scan_info": {
+        "timestamp": "Tue Jul 22 12:38:25 2025",
+        "elapsed": "38.06"
+      }
+    }
+  }
+]
