@@ -43,11 +43,17 @@ A Flask-based dashboard for running and visualizing Nmap scans.
 ## Project Structure
 
 ```
-app.py
-requirements.txt
-scan_history.json
-static/
-templates/
+Nmap-Dashboard-v1/
+├── app.py                # Main Flask application
+├── requirements.txt      # Python dependencies
+├── scan_history.json     # Stores scan results/history
+├── static/               # Static files (CSS, JS, images)
+│   ├── logo.png
+│   ├── scripts.js
+│   └── styles.css
+├── templates/            # HTML templates
+│   └── index.html
+└── README.md             # Project documentation
 ```
 
 ---
