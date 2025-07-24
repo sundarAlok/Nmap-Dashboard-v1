@@ -42,6 +42,13 @@ A Flask-based dashboard for running and visualizing Nmap scans.
 - Only scan networks you have permission to scan.
 - For best results, ensure Nmap is correctly installed and accessible from the command line.
 
+## Screenshots
+
+<img width="1314" height="723" alt="without-scan" src="https://github.com/user-attachments/assets/b137dcb4-55bc-4c4a-a599-a5d869e9c244" />
+
+<img width="1065" height="635" alt="after-scan" src="https://github.com/user-attachments/assets/b97b0589-69de-41f5-86dd-346b151891e9" />
+
+
 ## Project Structure
 
 ```
